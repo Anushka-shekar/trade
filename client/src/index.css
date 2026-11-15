@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-paper text-ink-900 antialiased;
+}
+
+@layer components {
+  .card {
+    @apply rounded-lg border border-slate-200 bg-white p-4 sm:p-5;
+  }
+  .card-title {
+    @apply mb-3 text-base font-semibold text-ink-900;
+  }
+  .th {
+    @apply px-3 py-2 text-left text-xs font-medium text-slate-500;
+  }
+  .td {
+    @apply px-3 py-2.5 text-sm;
+  }
+  .btn {
+    @apply rounded-md px-4 py-2 text-sm font-semibold text-white transition focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+}
