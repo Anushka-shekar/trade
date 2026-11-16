@@ -38,8 +38,10 @@ export interface Trade {
   quantity: number;
   price: number;
   total: number;
+  fee: number;
   realizedPnl: number;
   timestamp: string;
+  clientOrderId?: string;
 }
 
 export interface PortfolioSummary {

@@ -39,9 +39,11 @@ export interface Trade {
   side: TradeSide;
   quantity: number;
   price: number;
-  total: number;
+  total: number; // price x quantity, before any fee
+  fee: number; // 0 for now; fees can be switched on later in the trading engine
   realizedPnl: number; // 0 for BUY trades
   timestamp: string; // ISO string
+  clientOrderId?: string; // present when the client sent one (used to prevent duplicate orders)
 }
 
 export interface PortfolioSummary {

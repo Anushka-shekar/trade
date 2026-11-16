@@ -1,3 +1,6 @@
+
+"typecheck": "tsc --noEmit",
+"test": "tsx --test src/services/tradingService.test.ts"
 {
   "name": "tradelab-ai-server",
   "version": "0.1.0",

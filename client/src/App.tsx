@@ -6,11 +6,10 @@ import PriceChart from "./components/PriceChart";
 import Sidebar, { type View } from "./components/Sidebar";
 import StatCard from "./components/StatCard";
 import StockTable from "./components/StockTable";
-import TradeForm from "./components/TradeForm";
+import TradeForm, { type TradeOutcome } from "./components/TradeForm";
 import TradeHistory from "./components/TradeHistory";
 import type { PortfolioSummary, Stock, StockDetail, Trade, TradeSide } from "./types";
 import { formatINR, formatPercent, formatSigned, pnlColor } from "./utils/format";
-
 export default function App() {
   const [view, setView] = useState<View>("dashboard");
   const [stocks, setStocks] = useState<Stock[]>([]);
@@ -88,8 +87,7 @@ export default function App() {
           <div className="space-y-6">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
               <StatCard label="Virtual cash" value={formatINR(portfolio.cash)} />
-              <StatCard label="Portfolio value" value={formatINR(portfolio.holdingsValue)} sub="Stocks at current mock prices" valueClassName="text-ink-900" />
-              <StatCard
+              <StatCard label="Holdings value" value={formatINR(portfolio.holdingsValue)} sub="Stocks only. Excludes cash." valueClassName="text-ink-900" />              <StatCard
                 label="Total profit / loss"
                 value={formatSigned(portfolio.totalPnl)}
                 sub={formatPercent(portfolio.totalPnlPercent)}
@@ -150,7 +148,25 @@ export default function App() {
                       stock={selectedStock}
                       cash={portfolio.cash}
                       ownedQuantity={ownedQuantity}
-                      onTrade={handleTrade}
+                      onTrade={  // Step 1 places the trade. If that throws, TradeForm shows the error.
+  // Step 2 refreshes the screen. If ONLY that fails, the trade still happened, so we report
+  // it separately instead of throwing (otherwise the user would think it failed and retry).
+  async function handleTrade(
+    symbol: string,
+    side: TradeSide,
+    quantity: number,
+    clientOrderId: string
+  ): Promise<TradeOutcome> {
+    await api.placeTrade(symbol, side, quantity, clientOrderId);
+    try {
+      const [p, t] = await Promise.all([api.getPortfolio(), api.getTrades()]);
+      setPortfolio(p);
+      setTrades(t);
+      return { refreshed: true };
+    } catch {
+      return { refreshed: false };
+    }
+  }}
                     />
                   </section>
                 </>
